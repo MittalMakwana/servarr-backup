@@ -85,7 +85,7 @@ class Radarr(Server):
         logger.debug(f"Requesting URL: {url}")
         logger.debug(f"Using headers: {headers}")
         
-        res = requests.post(url, headers=headers, json={"name": "Backup"})
+        res = requests.post(url, headers=headers, json={"name": "Backup"}, verify=False)
         
         if res.status_code == 201:
             command_id = res.json().get('id')
@@ -132,7 +132,7 @@ class Radarr(Server):
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
-        res = requests.delete(url, headers=headers)
+        res = requests.delete(url, headers=headers, verify=False)
 
         if res.status_code == 200:
             logger.info(f"Backup {backup_id} deleted successfully from Radarr.")
@@ -161,7 +161,7 @@ class Radarr(Server):
             "Content-Type": "application/json"
         }
         logger.info("Downloading the latest backup.")
-        res = requests.get(url, headers=headers)
+        res = requests.get(url, headers=headers, verify=False)
         
         if res.status_code != 200:
             logger.error(f"Failed to retrieve backups. Status code: {res.status_code}")
@@ -177,7 +177,7 @@ class Radarr(Server):
         backup_path = manual_backup['path']
         download_url = f"{self.url}{backup_path}"
         logger.debug(f"Downloading backup from URL: {download_url}")
-        backup_res = requests.get(download_url, headers=headers)
+        backup_res = requests.get(download_url, headers=headers, verify=False)
 
         if backup_res.status_code == 200:
             backup_file_path = os.path.join("/tmp", os.path.basename(backup_path))
@@ -205,7 +205,7 @@ class Radarr(Server):
             "Content-Type": "application/json"
         }
         logger.info(f"Retrieving backup ID for {backup_name}.")
-        res = requests.get(url, headers=headers)
+        res = requests.get(url, headers=headers, verify=False)
         
         if res.status_code != 200:
             logger.error(f"Failed to retrieve backups. Status code: {res.status_code}")
@@ -230,7 +230,7 @@ class Radarr(Server):
         }
         logger.info(f"Waiting for completion of backup command ID: {command_id}")
         while True:
-            res = requests.get(url, headers=headers)
+            res = requests.get(url, headers=headers, verify=False)
             if res.status_code != 200:
                 logger.error(f"Failed to retrieve command status. Status code: {res.status_code}")
                 return False
