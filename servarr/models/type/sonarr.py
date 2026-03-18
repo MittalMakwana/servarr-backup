@@ -57,7 +57,7 @@ class Sonarr(Server):
         
         if backup_path:
             # Upload Backup to S3
-            s3_key = f"sonarr/{self.instance_name}/{os.path.basename(backup_path)}"
+            s3_key = self.build_backup_s3_key(backup_path)
             upload_success = self.s3_bucket.upload_file(backup_path, s3_key)
             
             if upload_success:
@@ -141,7 +141,7 @@ class Sonarr(Server):
 
 
     def list_backups(self):
-        backups = self.s3_bucket.list("sonarr")
+        backups = self.s3_bucket.list(self.get_instance_prefix())
         backup_list = []
         for backup in backups:
             backup_list.append({
